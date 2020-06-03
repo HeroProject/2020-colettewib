@@ -11,7 +11,7 @@ class Main:
         self.action_runner = ActionRunner(self.sic)
 
         self.user_model = {'move_number': 1,
-                           'continue_move' : False
+                           'continue_move' : False,
                            'complete_dance': True}
         self.recognition_manager = {'attempt_success': False,
                                     'attempt_number': 0}
@@ -42,7 +42,7 @@ class Main:
         while not self.recognition_manager['attempt_success'] and self.recognition_manager['attempt_number'] < 2:
             self.action_runner.run_waiting_action('say', 'Heb je zin om een dans spel te spelen?')
             self.action_runner.run_waiting_action('speech_recognition', 'answer_yesno', 3, additional_callback=self.on_play_game)
-        # say something if fail.
+
         self.reset_recognition_management()
 
         if self.user_model['play_game']:
@@ -92,7 +92,7 @@ class Main:
             self.user_model['complete_dance'] = False
             self.recognition_manager['attempt_success'] = True
         elif intent_name == 'fail':
-            self.user_model['complete_dance'] = True
+            self.user_model['complete_dance'] = False
             self.recognition_manager['attempt_number'] += 1
 
     def reset_recognition_management(self):
@@ -112,27 +112,26 @@ class Main:
 
         self.teach_dance()
 
-    def stop_game(self):
-        self.action_runner.run_waiting_action('say', 'Oke, tot de volgende keer dan!')
-
     def teach_dance(self):
 
         #self.sic.start()
-        #self.action_runner.load_waiting_action('wake_up')
+        self.action_runner.load_waiting_action('wake_up')
 
         self.action_runner.run_waiting_action('say', 'Oke, ik zal beginnen met je de hele dans te laten zien. Daarna leer ik je stap voor stap de pasjes.')
         self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
         self.action_runner.run_waiting_action('say', 'Dat was de complete dans, laten we beginnen met stap 1!')
-        self.action_runner.run_waiting_action('say', 'Ik start altijd met een goeie move, daarna begint de rest van de dans. Deze gaat zo ')
+        self.action_runner.run_waiting_action('say', 'Ik start altijd met een openings move, daarna begint de rest van de dans. Deze gaat zo ')
         self.action_runner.run_waiting_action('do_gesture', 'dances/openingMove')
         self.action_runner.run_waiting_action('say', 'Heb je m? Dan gaan we nu door naar de rest van de dans. Hier komt stap 1.')
 
 
-        while self.user_model['move_number'] < self.total_nr_moves:
+        while self.user_model['move_number'] > self.total_nr_moves:
             self.action_runner.run_waiting_action('do_gesture', 'dances/Move' + str(self.user_model['move_number']))
-            #databank maken van dingen om te zeggen elke keer.
+# NA ELKE MOVE rechtop STAAN?  self.action_runner.run_waiting_action('go_to_posture', BasicNaoPosture.Stand)
+
+#databank maken van dingen om te zeggen elke keer.
             self.action_runner.run_waiting_action('say', 'Laten we deze stap samen nog een keer herhalen')
-            #LATEN ZIEN, NOG IETS DOEN MET BEELD? moet echt kijken naar de persoon
+ #LATEN ZIEN, NOG IETS DOEN MET BEELD? moet echt kijken naar de persoon
             self.action_runner.run_waiting_action('do_gesture', 'dances/Move' + str(self.user_model['move_number']))
             self.action_runner.run_waiting_action('say', 'Heel goed! Wil je het pasje nog een keer zien?')
             self.action_runner.run_waiting_action('speech_recognition', 'answer_yesno', 3, additional_callback=self.on_continue_move)
@@ -142,20 +141,20 @@ class Main:
                 self.action_runner.run_waiting_action('say', 'Door naar het volgende pasje. Komt ie!')
 
         self.action_runner.run_waiting_action('say', 'Dat waren ze bijna allemaal. Maar een dans is een performance, dus je eindigt natuurlijk met een buiging')
-        self.action_runner.run_waiting_action('do_gesture', 'dances/takeABow')
+        self.action_runner.run_waiting_action('do_gesture', 'dances/TakeABow')
 
-        self.action_runner.run_waiting_action('say', 'Nu is ie echt compleet. Laten we de hele dans samen uitvoeren. 1, 2, 3, 4, 5, 6, 7, 8')
-        self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
-
-        self.action_runner.run_waiting_action('say', 'Wil je nog een keer de hele dans doen?')
-        self.action_runner.run_waiting_action('speech_recognition', 'answer_yesno', 3,
-                                              additional_callback=self.on_complete_dance)
+        self.action_runner.run_waiting_action('say', 'Nu is ie echt compleet. Laten we de hele dans samen uitvoeren. 1 2 3 4 5 6 7 8')
 
         while self.user_model['complete_dance'] == True:
-            self.action_runner.run_waiting_action('say', 'Oke, gaan we nog een keer!')
             self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
+            self.action_runner.run_waiting_action('say', 'Wil je nog een keer de hele dans doen?')
+            self.action_runner.run_waiting_action('speech_recognition', 'answer_yesno', 3,
+                                                  additional_callback=self.on_complete_dance)
 
-        self.action_runner.run_waiting_action('say', 'Oke, dat was het. Goed gedaan! Tot de volgende keer.')
+            if self.user_model['complete_dance'] == True:
+                self.action_runner.run_waiting_action('say', 'Oke, gaan we nog een keer!')
+            if self.user_model['complete_dance'] == False:
+                self.action_runner.run_waiting_action('say', 'Oke, dat was het. Goed gedaan! Tot de volgende keer.')
 
         #self.sic.stop()
 
