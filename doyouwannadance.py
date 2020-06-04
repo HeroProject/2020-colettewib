@@ -127,7 +127,7 @@ class Main:
 
         while self.user_model['move_number'] > self.total_nr_moves:
             self.action_runner.run_waiting_action('do_gesture', 'dances/Move' + str(self.user_model['move_number']))
-# NA ELKE MOVE rechtop STAAN?  self.action_runner.run_waiting_action('go_to_posture', BasicNaoPosture.Stand)
+            self.action_runner.run_waiting_action('go_to_posture', BasicNaoPosture.STAND)
 
 #databank maken van dingen om te zeggen elke keer.
             self.action_runner.run_waiting_action('say', 'Laten we deze stap samen nog een keer herhalen')
@@ -138,7 +138,13 @@ class Main:
 
             if self.user_model['continue_move'] == True:
                 self.user_model['move_number'] += 1
-                self.action_runner.run_waiting_action('say', 'Door naar het volgende pasje. Komt ie!')
+                if not self.user_model['move_number'] == self.total_nr_moves:
+                    self.action_runner.run_waiting_action('say', 'Door naar het volgende pasje. Komt ie!')
+
+            if self.user_model['continue_move'] == False:
+                self.user_model['move_number'] += 1
+                self.action_runner.run_waiting_action('say', 'Oke, ik doe m nog een keer voor, doe maar mee.')
+
 
         self.action_runner.run_waiting_action('say', 'Dat waren ze bijna allemaal. Maar een dans is een performance, dus je eindigt natuurlijk met een buiging')
         self.action_runner.run_waiting_action('do_gesture', 'dances/TakeABow')

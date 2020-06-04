@@ -101,7 +101,7 @@ class Main:
 
     def start_game(self):
         if 'name' in self.user_model:
-            self.action_runner.run_waiting_action('say', 'Top, laten we beginnen dan' + self.user_model['name'])
+            self.action_runner.run_waiting_action('say', 'Top, laten we beginnen dan,' + self.user_model['name'])
         else:
             self.action_runner.run_waiting_action('say', 'Top, laten we beginnen dan!')
 
@@ -131,30 +131,34 @@ class Main:
 
         while self.user_model['move_number'] < self.total_nr_moves:
             self.action_runner.run_waiting_action('do_gesture', 'dances/Move' + str(self.user_model['move_number']))
-#NA ELKE MOVE STILSTAAN?  self.action_runner.run_waiting_action('go_to_posture', BasicNaoPosture.Stand)
+            self.action_runner.run_waiting_action('go_to_posture', BasicNaoPosture.STAND)
 #databank maken van dingen om te zeggen elke keer.
             self.action_runner.run_waiting_action('say', 'Kun je die stap voor me herhalen?')
-#LATEN ZIEN, NOG IETS DOEN MET BEELD? moet echt kijken naar de persoon
-            sleep(5)
+#wat als persoon niet beweegt?
+            sleep(8)
             self.action_runner.run_waiting_action('say', 'Heel goed! Wil je het pasje nog een keer zien?')
             self.action_runner.run_waiting_action('speech_recognition', 'answer_yesno', 3, additional_callback=self.on_continue_move)
 
             if self.user_model['continue_move'] == True:
                 self.user_model['move_number'] += 1
-                self.action_runner.run_waiting_action('say', 'Door naar het volgende pasje. Komt ie!')
+                if not self.user_model['move_number'] == self.total_nr_moves:
+                    self.action_runner.run_waiting_action('say', 'Door naar het volgende pasje. Komt ie!')
+
+            if self.user_model['continue_move'] == False:
+                self.user_model['move_number'] += 1
+                self.action_runner.run_waiting_action('say', 'Oke, ik doe m nog een keer voor, daarna mag jij m weer herhalen. ')
 
         self.action_runner.run_waiting_action('say', 'Dat waren ze bijna allemaal. Maar een dans is een performance, dus je eindigt natuurlijk met een buiging')
-        self.action_runner.run_waiting_action('do_gesture', 'dances/takeABow')
+        self.action_runner.run_waiting_action('do_gesture', 'dances/TakeABow')
 
-        self.action_runner.run_waiting_action('say', 'Nu is ie echt compleet. Ik ga m nog 1 keer helemaal laten zien en daarna is het aan jou de beurt!')
+        self.action_runner.run_waiting_action('say', 'Nu is ie echt compleet. Ik ga m nog 1 keer helemaal laten zien, dus kijk goed. Daarna is het aan jou de beurt!')
 
         while self.user_model['complete_dance'] == True:
             self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
             self.action_runner.run_waiting_action('say', 'Nu jij!')
 
-            self.action_runner.run_waiting_action('play_audio', 'caravanPalace.wav')
+            self.action_runner.run_waiting_action('play_audio', 'caravanPalace.mp3')
 
-# KIJKEN NAAR PERSOON
             self.action_runner.run_waiting_action('say', 'Wil je nog een keer de hele dans doen?')
             self.action_runner.run_waiting_action('speech_recognition', 'answer_yesno', 3,
                                                   additional_callback=self.on_complete_dance)
@@ -166,9 +170,15 @@ class Main:
 
         #self.sic.stop()
 
+
+    def audio_test(self):
+        print('ni')
+        self.action_runner.run_waiting_action('play_audio', 'caravanPalace.mp3')
+        print('hi')
+
 main = Main('192.168.2.141',
             RobotType.NAO,
             'coco.json',
             'coco-mrjvwk')
 
-main.teach_dance()
+main.audio_test()
