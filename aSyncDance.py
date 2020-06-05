@@ -1,6 +1,6 @@
 from social_interaction_cloud.abstract_connector import RobotType
 from social_interaction_cloud.action import ActionRunner
-from social_interaction_cloud.basic_connector import BasicSICConnector
+from social_interaction_cloud.basic_connector import BasicSICConnector, BasicNaoPosture
 from time import sleep
 
 
@@ -122,7 +122,7 @@ class Main:
 
         self.action_runner.run_waiting_action('say', 'Oke, ik zal beginnen met je de hele dans te laten zien.'
                                                      'Daarna leer ik je stap voor stap de pasjes. Belangrijk is dat je eerst kijkt hoe ik beweeg, en pas daarna zelf het pasje uitvoert.')
-        self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
+        #self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
         self.action_runner.run_waiting_action('say', 'Dat was de complete dans, laten we beginnen!')
         self.action_runner.run_waiting_action('say', 'Ik start altijd met een goeie move, daarna begint de rest van de dans. Deze gaat zo ')
         self.action_runner.run_waiting_action('do_gesture', 'dances/openingMove')
@@ -157,7 +157,7 @@ class Main:
             self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
             self.action_runner.run_waiting_action('say', 'Nu jij!')
 
-            self.action_runner.run_waiting_action('play_audio', 'caravanPalace.mp3')
+            self.action_runner.run_waiting_action('play_audio', 'caravanPalace.wav')
 
             self.action_runner.run_waiting_action('say', 'Wil je nog een keer de hele dans doen?')
             self.action_runner.run_waiting_action('speech_recognition', 'answer_yesno', 3,
@@ -172,9 +172,11 @@ class Main:
 
 
     def audio_test(self):
+        self.sic.start()
         print('ni')
-        self.action_runner.run_waiting_action('play_audio', 'caravanPalace.mp3')
+        self.action_runner.run_waiting_action('play_audio', 'suzanne.wav')
         print('hi')
+        self.sic.stop()
 
 main = Main('192.168.2.141',
             RobotType.NAO,
