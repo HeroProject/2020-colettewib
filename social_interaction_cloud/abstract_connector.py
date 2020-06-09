@@ -205,7 +205,7 @@ class AbstractSICConnector(object):
         A PlayAudioStarted event will be sent when the audio starts and a PlayAudioDone event after it is finished.
         Any previously playing audio will be cancelled first;
         calling play_audio with an empty string thus has the effect of cancelling any previously playing audio."""
-        self.__send('action_play_audio', audio_file)
+        self.__send('action_play_audio', audio_file + ';raw')
 
     def set_eye_color(self, color: str):
         """Sets the robot's eye LEDs to one of the following colours:
