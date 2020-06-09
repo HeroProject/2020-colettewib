@@ -2,6 +2,7 @@ from social_interaction_cloud.abstract_connector import RobotType
 from social_interaction_cloud.action import ActionRunner
 from social_interaction_cloud.basic_connector import BasicSICConnector, BasicNaoPosture
 from time import sleep
+import random
 
 
 class Main:
@@ -15,8 +16,12 @@ class Main:
                            'complete_dance': True}
         self.recognition_manager = {'attempt_success': False,
                                     'attempt_number': 0}
-#MISSCHIEN JSON FILE?
-        self.continue_phrases = {}
+
+
+        self.show_questions = ['Kun je die stap voor me herhalen?', 'Kun jij die stap nu doen?', 'Nu jij!', 'Probeer jij die nu maar na te doen', 'Herhaal m maar!', 'Oefen deze stap ook maar even']
+        self.repeat_questions = ['Heel goed! Wil je deze stap nog een keer zien?', 'Lekker bezig, wil je het nog een keer zien?', 'Zo gaat ie goed. Zal ik deze stap nog een keer herhalen?', 'Dat ziet er al goed uit. Wil je het pasje nog een keer zien?']
+        self.continue_phrases = ['Oke, door naar de volgende stap! Komt ie', 'Yes, dan gaan we door! Ga ik weer', 'Op naar de volgende stap!', 'Alright, hier komt de volgende stap', 'Oke, door naar de volgende danspas!']
+        self.repeat_phrases = ['Oke, ik doe m nog een keer voor, daarna mag jij m weer herhalen.', 'Ik ga m nog een keer voor je laten zien, daarna doe jij hem weer na toch?', 'Oke, ik zal de stap opnieuw laten zien, Daarna kan jij m weer oefenen.']
 
         self.action_runner = ActionRunner(self.sic)
 
@@ -49,8 +54,6 @@ class Main:
             self.start_game()
         else:
             self.stop_game()
-
-        # EVENTUEEL NOG DOOR MET ANDERE OPTIE (NAO LEERT DANS VAN KIND)
 
         self.action_runner.run_waiting_action('rest')
         self.sic.stop()
@@ -105,7 +108,6 @@ class Main:
         else:
             self.action_runner.run_waiting_action('say', 'Top, laten we beginnen dan!')
 
-#CAMERA NEEDED?
         self.action_runner.run_waiting_action('say', 'Ik ga je een dans leren, aan het einde kun je die zelf optreden en laten zien!')
 
 #LATER OPTIE TOEVOEGEN MOGELIJK OM DANS AAN NAO TE LEREN TOEVOEGEN, DAN OOK VRAAG OM LEREN OF AANLEREN
@@ -117,12 +119,12 @@ class Main:
 
     def teach_dance(self):
 
-        #self.sic.start()
+        self.sic.start()
         self.action_runner.load_waiting_action('wake_up')
 
         self.action_runner.run_waiting_action('say', 'Oke, ik zal beginnen met je de hele dans te laten zien.'
                                                      'Daarna leer ik je stap voor stap de pasjes. Belangrijk is dat je eerst kijkt hoe ik beweeg, en pas daarna zelf het pasje uitvoert.')
-        #self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
+        self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
         self.action_runner.run_waiting_action('say', 'Dat was de complete dans, laten we beginnen!')
         self.action_runner.run_waiting_action('say', 'Ik start altijd met een goeie move, daarna begint de rest van de dans. Deze gaat zo ')
         self.action_runner.run_waiting_action('do_gesture', 'dances/openingMove')
@@ -133,20 +135,19 @@ class Main:
             self.action_runner.run_waiting_action('do_gesture', 'dances/Move' + str(self.user_model['move_number']))
             self.action_runner.run_waiting_action('go_to_posture', BasicNaoPosture.STAND)
 #databank maken van dingen om te zeggen elke keer.
-            self.action_runner.run_waiting_action('say', 'Kun je die stap voor me herhalen?')
-#wat als persoon niet beweegt?
+            self.action_runner.run_waiting_action('say', random.choice(self.show_questions))
             sleep(8)
-            self.action_runner.run_waiting_action('say', 'Heel goed! Wil je het pasje nog een keer zien?')
+            self.action_runner.run_waiting_action('say', random.choice(self.repeat_questions))
             self.action_runner.run_waiting_action('speech_recognition', 'answer_yesno', 3, additional_callback=self.on_continue_move)
 
             if self.user_model['continue_move'] == True:
                 self.user_model['move_number'] += 1
                 if not self.user_model['move_number'] == self.total_nr_moves:
-                    self.action_runner.run_waiting_action('say', 'Door naar het volgende pasje. Komt ie!')
+                    self.action_runner.run_waiting_action('say', random.choice(self.continue_phrases))
 
             if self.user_model['continue_move'] == False:
                 self.user_model['move_number'] += 1
-                self.action_runner.run_waiting_action('say', 'Oke, ik doe m nog een keer voor, daarna mag jij m weer herhalen. ')
+                self.action_runner.run_waiting_action('say', random.choice(self.repeat_phrases))
 
         self.action_runner.run_waiting_action('say', 'Dat waren ze bijna allemaal. Maar een dans is een performance, dus je eindigt natuurlijk met een buiging')
         self.action_runner.run_waiting_action('do_gesture', 'dances/TakeABow')
@@ -168,17 +169,17 @@ class Main:
             if self.user_model['complete_dance'] == False:
                 self.action_runner.run_waiting_action('say', 'Oke, dat was het dan. Goed gedaan! Tot de volgende keer.')
 
-        #self.sic.stop()
+        self.sic.stop()
 
 
     def audio_test(self):
         self.sic.start()
         print('ni')
-        self.action_runner.run_waiting_action('play_audio', 'suzanne.wav')
+        self.action_runner.run_waiting_action('play_audio', 'caravanPalace.wav')
         print('hi')
         self.sic.stop()
 
-main = Main('192.168.2.141',
+main = Main('192.168.2.148',
             RobotType.NAO,
             'coco.json',
             'coco-mrjvwk')
