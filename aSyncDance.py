@@ -19,7 +19,7 @@ class Main:
 
 
         self.show_questions = ['Kun je die stap voor me herhalen?', 'Kun jij die stap nu doen?', 'Nu jij!', 'Probeer jij die nu maar na te doen', 'Herhaal m maar!', 'Oefen deze stap ook maar even']
-        self.repeat_questions = ['Heel goed! Wil je deze stap nog een keer zien?', 'Lekker bezig, wil je het nog een keer zien?', 'Zo gaat ie goed. Zal ik deze stap nog een keer herhalen?', 'Dat ziet er al goed uit. Wil je het pasje nog een keer zien?']
+        self.repeat_questions = ['Dat voelt goed! Wil je deze stap nog een keer zien?', 'We zijn lekker bezig, wil je het nog een keer zien?', 'Voelt goed als je meedoet! Zal ik deze stap nog een keer herhalen?', 'Volgens mij kun jij het wel. Wil je het pasje nog een keer zien?']
         self.continue_phrases = ['Oke, door naar de volgende stap! Komt ie', 'Yes, dan gaan we door! Ga ik weer', 'Op naar de volgende stap!', 'Alright, hier komt de volgende stap', 'Oke, door naar de volgende danspas!']
         self.repeat_phrases = ['Oke, ik doe m nog een keer voor, daarna mag jij m weer herhalen.', 'Ik ga m nog een keer voor je laten zien, daarna doe jij hem weer na toch?', 'Oke, ik zal de stap opnieuw laten zien, Daarna kan jij m weer oefenen.']
 
@@ -36,7 +36,7 @@ class Main:
 
         while not self.recognition_manager['attempt_success'] and self.recognition_manager['attempt_number'] < 2:
             self.action_runner.run_waiting_action('say', 'Hoi Ik ben Nao. Hoe heet jij?')
-            self.action_runner.run_waiting_action('speech_recognition', 'answer_name', 3, additional_callback=self.on_name)
+            self.action_runner.run_waiting_action('speech_recognition', 'answer_name', 4, additional_callback=self.on_name)
         self.reset_recognition_management()
 
         if 'name' in self.user_model:
@@ -47,7 +47,7 @@ class Main:
         while not self.recognition_manager['attempt_success'] and self.recognition_manager['attempt_number'] < 2:
             self.action_runner.run_waiting_action('say', 'Heb je zin om een dans spel te spelen?')
             self.action_runner.run_waiting_action('speech_recognition', 'answer_yesno', 3, additional_callback=self.on_play_game)
-        # say something if fail.
+
         self.reset_recognition_management()
 
         if self.user_model['play_game']:
@@ -110,7 +110,6 @@ class Main:
 
         self.action_runner.run_waiting_action('say', 'Ik ga je een dans leren, aan het einde kun je die zelf optreden en laten zien!')
 
-#LATER OPTIE TOEVOEGEN MOGELIJK OM DANS AAN NAO TE LEREN TOEVOEGEN, DAN OOK VRAAG OM LEREN OF AANLEREN
 
         self.teach_dance()
 
@@ -119,8 +118,6 @@ class Main:
 
     def teach_dance(self):
 
-        self.sic.start()
-        self.action_runner.load_waiting_action('wake_up')
 
         self.action_runner.run_waiting_action('say', 'Oke, ik zal beginnen met je de hele dans te laten zien.'
                                                      'Daarna leer ik je stap voor stap de pasjes. Belangrijk is dat je eerst kijkt hoe ik beweeg, en pas daarna zelf het pasje uitvoert.')
@@ -134,7 +131,7 @@ class Main:
         while self.user_model['move_number'] < self.total_nr_moves:
             self.action_runner.run_waiting_action('do_gesture', 'dances/Move' + str(self.user_model['move_number']))
             self.action_runner.run_waiting_action('go_to_posture', BasicNaoPosture.STAND)
-#databank maken van dingen om te zeggen elke keer.
+
             self.action_runner.run_waiting_action('say', random.choice(self.show_questions))
             sleep(8)
             self.action_runner.run_waiting_action('say', random.choice(self.repeat_questions))
@@ -146,7 +143,6 @@ class Main:
                     self.action_runner.run_waiting_action('say', random.choice(self.continue_phrases))
 
             if self.user_model['continue_move'] == False:
-                self.user_model['move_number'] += 1
                 self.action_runner.run_waiting_action('say', random.choice(self.repeat_phrases))
 
         self.action_runner.run_waiting_action('say', 'Dat waren ze bijna allemaal. Maar een dans is een performance, dus je eindigt natuurlijk met een buiging')
@@ -169,8 +165,6 @@ class Main:
             if self.user_model['complete_dance'] == False:
                 self.action_runner.run_waiting_action('say', 'Oke, dat was het dan. Goed gedaan! Tot de volgende keer.')
 
-        self.sic.stop()
-
 
     def audio_test(self):
         self.sic.start()
@@ -184,4 +178,4 @@ main = Main('192.168.2.148',
             'coco.json',
             'coco-mrjvwk')
 
-main.audio_test()
+main.run()

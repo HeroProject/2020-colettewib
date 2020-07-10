@@ -18,7 +18,7 @@ class Main:
                                     'attempt_number': 0}
 
         self.show_questions = ['Laten we deze stap samen nog een keer herhalen', 'Kun jij die stap nu doen? Ik doe met je mee', 'Nog een keer, nu doe je mee!', 'Probeer jij die nu samen met mij maar na te doen. ', 'Laten we m samen nog een keer doen', 'Deze stap oefenen we ook nog maar even samen']
-        self.repeat_questions = ['Heel goed! Wil je deze stap nog een keer zien?', 'Lekker bezig, wil je het nog een keer zien?', 'Zo gaat ie goed. Zal ik deze stap nog een keer herhalen?', 'Dat ziet er al goed uit. Wil je het pasje nog een keer zien?']
+        self.repeat_questions = ['Dat voelt goed! Wil je deze stap nog een keer zien?', 'We zijn lekker bezig, wil je het nog een keer zien?', 'Voelt goed als je meedoet! Zal ik deze stap nog een keer herhalen?', 'Volgens mij kun jij het wel. Wil je het pasje nog een keer zien?']
         self.continue_phrases = ['Oke, door naar de volgende stap! Komt ie', 'Yes, dan gaan we door! Ga ik weer', 'Op naar de volgende stap!', 'Alright, hier komt de volgende stap', 'Oke, door naar de volgende danspas!']
         self.repeat_phrases = ['Oke, ik doe m nog een keer voor, daarna mag jij m weer herhalen.', 'Ik ga m nog een keer voor je laten zien, daarna doe jij hem weer na toch?', 'Oke, ik zal de stap opnieuw laten zien, Daarna kan jij m weer oefenen.']
 
@@ -113,11 +113,8 @@ class Main:
 
     def teach_dance(self):
 
-        self.sic.start()
-        self.action_runner.load_waiting_action('wake_up')
-
         self.action_runner.run_waiting_action('say', 'Oke, ik zal beginnen met je de hele dans te laten zien. Daarna leer ik je stap voor stap de pasjes.')
-       # self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
+        self.action_runner.run_waiting_action('do_gesture', 'dances/behavior_1')
         self.action_runner.run_waiting_action('say', 'Dat was de complete dans, laten we beginnen met stap 1!')
         self.action_runner.run_waiting_action('say', 'Ik start altijd met een openings move, daarna begint de rest van de dans. Deze gaat zo ')
         self.action_runner.run_waiting_action('do_gesture', 'dances/openingMove')
@@ -128,7 +125,6 @@ class Main:
             self.action_runner.run_waiting_action('do_gesture', 'dances/Move' + str(self.user_model['move_number']))
             self.action_runner.run_waiting_action('go_to_posture', BasicNaoPosture.STAND)
 
-#databank maken van dingen om te zeggen elke keer.
             self.action_runner.run_waiting_action('say', random.choice(self.show_questions))
             self.action_runner.run_waiting_action('do_gesture', 'dances/Move' + str(self.user_model['move_number']))
             self.action_runner.run_waiting_action('say', random.choice(self.repeat_questions))
@@ -140,7 +136,6 @@ class Main:
                     self.action_runner.run_waiting_action('say', random.choice(self.continue_phrases))
 
             if self.user_model['continue_move'] == False:
-                self.user_model['move_number'] += 1
                 self.action_runner.run_waiting_action('say', random.choice(self.repeat_phrases))
 
 
@@ -160,11 +155,10 @@ class Main:
             if self.user_model['complete_dance'] == False:
                 self.action_runner.run_waiting_action('say', 'Oke, dat was het. Goed gedaan! Tot de volgende keer.')
 
-        self.sic.stop()
 
 main = Main('192.168.2.148',
             RobotType.NAO,
             'coco.json',
             'coco-mrjvwk')
 
-main.teach_dance()
+main.run()
